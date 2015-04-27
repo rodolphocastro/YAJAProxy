@@ -23,3 +23,9 @@ The idea behind YAJAProxy's goal is to allow users to have a lightweight proxy t
 
 
 ## Version History
+
+### Version 0.2
+Added support for Printing the Proxy'ed data to an output file.
+
+### Version 0.1
+Initial version, supporting only basic proxy functionalities (redirecting from port X to port Y).

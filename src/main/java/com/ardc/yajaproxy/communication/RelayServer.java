@@ -1,6 +1,7 @@
 package com.ardc.yajaproxy.communication;
 
 import com.ardc.yajaproxy.communication.interfaces.RelayServerInterface;
+import com.ardc.yajaproxy.utils.FilePrinter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -31,6 +32,10 @@ public class RelayServer implements RelayServerInterface{
      */
     private boolean verbose;
     
+    /**
+     * The Client's IP Address.
+     */
+    private String clientAddress;
     
     @Override
     public void run() {
@@ -42,6 +47,7 @@ public class RelayServer implements RelayServerInterface{
                     System.out.format("[%s]: %s\n", "Relay-Server", new String(request));
                 }
                 streamToServer.write(request, 0, bytesRead);
+                FilePrinter.printToFile(String.format("%s@%s", "Client", clientAddress), new String(request));
                 streamToServer.flush();
             }
         }catch(IOException err){
@@ -89,6 +95,10 @@ public class RelayServer implements RelayServerInterface{
 
     public void setRequest(byte[] request) {
         this.request = request;
+    }
+
+    public void setClientAddress(String clientAddress) {
+        this.clientAddress = clientAddress;
     }
     
     

@@ -8,8 +8,6 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Server implementation, responsible for handling connections.
@@ -20,27 +18,27 @@ public class Server implements ServerInterface{
     /**
      * The local port to which the server should listen.
      */
-    private int localPort;
+    private final int localPort;
     
     /**
      * The remote port to which the server will send data thru.
      */
-    private int remotePort;
+    private final int remotePort;
     
     /**
      * The host.
      */
-    private String host;
+    private final String host;
     
     /**
      * Verbose flag.s
      */
-    private boolean verbose;
+    private final boolean verbose;
 
     /**
      * Reference to a FilePrinter.
      */
-    private FilePrinter filePrinter = null;
+    private FilePrinter filePrinter = FilePrinter.getFprinter();
     
     /**
      * The socket on which the server will listen for data.
@@ -163,7 +161,6 @@ public class Server implements ServerInterface{
                 //Starting the RelayServer
                 relayThread.start();
                 
-                //Reading the remote server's responses and relaying them to the client
                 int bytesRead;
                 try{
                     while((bytesRead = streamFromServer.read(reply)) != -1){
@@ -171,6 +168,7 @@ public class Server implements ServerInterface{
                             System.out.format("[%s]: %s\n", "Server", new String(request));
                         }
                         streamToClient.write(reply, 0, bytesRead);
+                        FilePrinter.printToFile(String.format("%s@%s", "Server", remoteSocket.getInetAddress()), new String(reply));
                         streamToClient.flush();
                     }
                 }catch(IOException er){
@@ -180,6 +178,7 @@ public class Server implements ServerInterface{
                 //The remote server closed its connection to us
                 //Closing connection to the client
                 streamToClient.close();
+                FilePrinter.finishWriting();
             }catch(IOException er){
                 System.err.format("[%s]: %s\n", "Server", er.getMessage());
             }finally{

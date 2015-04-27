@@ -1,11 +1,11 @@
 package com.ardc.yajaproxy.entry;
 
 import com.ardc.yajaproxy.communication.Server;
+import com.ardc.yajaproxy.utils.FilePrinter;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.ParseException;
 
 /**
@@ -65,9 +65,17 @@ public class App {
         //Setting up the options for execution
         parseArgs();
         
+        //Setting up a FIlePrinter, if needed.
+        if(outputFile != null){
+            FilePrinter.setVerbose(verbose);
+            FilePrinter.refresh(outputFile);
+        }
+        
         //Creating a new Server
         Server proxyServer = new Server(localPort, remotePort, host, verbose);
         proxyServer.setRun(true);
+        proxyServer.setFilePrinter(FilePrinter.getFprinter());
+        
         //Creating a thread for the Server
         Thread serverThread = new Thread(proxyServer);
         //Running the server
